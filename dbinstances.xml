@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><mapper>
+<select>
+SELECT
+  s.storeID,
+  s.storeName,
+  p.productID,
+  p.productName,
+  p.productPrice,
+  e.employeeID,
+  e.employeeName,
+  e.employeeSalary,
+FROM stores AS s
+LEFT JOIN products AS p ON p.fk_store_id = s.storeID
+LEFT JOIN employees AS e ON e.fk_store_id = s.storeID;
+</select>
+</mapper>
