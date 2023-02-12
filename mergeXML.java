@@ -71,7 +71,7 @@ public class mergeXML{
         System.out.println ("Files from main directory : " + maindir);
         db = dbf.newDocumentBuilder();
         doc=db.parse(new File("D:\\Btech Project\\dbinstances.xml"));
-        subdir(arr, 0,db);
+        // subdir(arr, 0,db);
         }
 
             TransformerFactory tFactory = TransformerFactory.newInstance();

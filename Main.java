@@ -84,10 +84,15 @@ public class Main {
                 cur_cnt++;
                 System.out.println(cur_cnt+")\n"+curquery+"\n-------------------------------------------");
                 // String[] arr_alias=new String[5];
-                Vector<String[]> arr_alias=simplifyjoin.main(null,curquery); 
+                Vector<String[]> arr_alias=simplifyjoin.main(null,curquery,"[\\w]+ AS+ ([a-zA-Z]+)"); 
+                Map<String,String> map_alias=new HashMap<String,String>();  
+                Map<String,Vector<String[]>> map_select_col=new HashMap<String,Vector<String[]>>();
                 for (String[] a : arr_alias) {
+                    map_alias.put(a[0],a[2]); System.out.println(a[2]+" \n");
+                    map_select_col.put(a[0],simplifyjoin.main(null,curquery.substring(0,find(curquery,"from",0)),a[2]+"\\.+([a-zA-Z]+)"));
+                    for(String[] b:map_select_col.get(a[0])) System.out.println(b[0]+" "); System.out.println("\n");
                     for(String b:a) {
-                        System.out.println(b+" \n");
+                        // System.out.println(b+" \n");
                     }
                 }
                 System.out.println("\n-------------------------------------------");
