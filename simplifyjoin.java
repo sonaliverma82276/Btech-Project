@@ -7,29 +7,20 @@ class simplifyjoin {
 
   // public Vector<String[]> arr_alias;
 
-  public static Vector<String[]> main(String[] args,String query,String regex) {
+  public static Vector<String[]> main(String[] args,String query,String regex,String sp) {
     final String queryString = query;
-    return deriveAlias(queryString,regex);
+    return deriveAlias(queryString,regex,sp);
   }
 
-  private static Vector<String[]> deriveAlias(String queryString,String regex) {
+  private static Vector<String[]> deriveAlias(String queryString,String regex,String sp) {
     String query = queryString.replace('\n', ' ');
     final Pattern pattern = Pattern.compile(regex,Pattern.CASE_INSENSITIVE);
     final Matcher matcher = pattern.matcher(query);
     Vector<String[]> arr_alias=new Vector<>();
     while (matcher.find()) {
         String alias=query.substring(matcher.start(),matcher.end());
-        System.out.println("  try0\n");
-        arr_alias.add(alias.split(" "));
-    }
-
-    final Pattern condition = Pattern.compile("[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+");
-    final Matcher match = condition.matcher(query);
-    Map<String,String> conditionMap = new HashMap<String,String>();
-    while (match.find()){
-      String substr = query.substring(match.start(),match.end());
-      String parts[] = substr.split("=");
-      conditionMap.put(parts[0],parts[1]);
+        // System.out.println("  try0\n");
+        arr_alias.add(alias.split(sp));
     }
     
     return arr_alias;
