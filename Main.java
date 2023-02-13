@@ -124,6 +124,8 @@ public class Main {
 
                 for(String a:single_join) System.out.println(a+" single_joins\n");
 
+                
+
                 System.out.println("\n-------------------------------------------");
             }
 
