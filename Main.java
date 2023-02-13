@@ -122,9 +122,9 @@ public class Main {
                     start=end+1;
                 }
 
-                for(String a:single_join) System.out.println(a+" single_joins\n");
+                for (String a:single_join) System.out.println(a+" single_joins\n");
 
-                
+
 
                 System.out.println("\n-------------------------------------------");
             }
