@@ -1,6 +1,5 @@
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.*;
 import java.util.*;
 
 class simplifyjoin {
