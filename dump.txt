@@ -30,3 +30,44 @@ SELECT
   e.employeeSalary,
 FROM TempTable AS t
 LEFT JOIN employees AS e ON e.fk_store_id = t.storeID;
+
+----------------------------------------------------------------------
+CREATE TABLE customers(customerID int,name varchar(255));
+
+/* Create few records in this table */
+INSERT INTO customers VALUES(1,'Tom');
+INSERT INTO customers VALUES(2,'Lucy');
+INSERT INTO customers VALUES(3,'Frank');
+INSERT INTO customers VALUES(4,'Jane');
+INSERT INTO customers VALUES(5,'Robert');
+
+CREATE TABLE orders(customerID int,orderID int,employeeID int);
+
+INSERT INTO orders VALUES(1,2,3);
+INSERT INTO orders VALUES(2,3,1);
+INSERT INTO orders VALUES(3,4,2);
+INSERT INTO orders VALUES(4,1,4);
+
+CREATE TABLE orderdetails(ID int,orderID int);
+
+INSERT INTO orderdetails VALUES(1,2);
+INSERT INTO orderdetails VALUES(2,3);
+INSERT INTO orderdetails VALUES(3,4);
+INSERT INTO orderdetails VALUES(4,1);
+
+CREATE TEMPORARY TABLE tempOrders (
+  OrderID INT,
+  CustomerID INT,
+  EmployeeID INT
+);
+
+INSERT INTO tempOrders
+SELECT o.OrderID, o.CustomerID, o.employeeID
+FROM Orders o
+JOIN OrderDetails od ON o.OrderID = od.OrderID;
+
+SELECT c.*, tem.EmployeeID
+FROM Customers c
+JOIN tempOrders as tem ON c.CustomerID = tem.CustomerID
+ORDER BY tem.EmployeeID;
+

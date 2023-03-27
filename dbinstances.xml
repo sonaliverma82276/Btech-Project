@@ -13,4 +13,8 @@ FROM stores AS s
 LEFT JOIN products AS p ON p.fk_store_id = s.storeID
 LEFT JOIN employees AS e ON e.fk_store_id = s.storeID;
 </select>
+<select>
+SELECT c.* FROM Customers as c, Orders as o, OrderDetails as od
+where o.CustomerID=c.CustomerID AND o.OrderID=od.OrderID;
+</select>
 </mapper>
