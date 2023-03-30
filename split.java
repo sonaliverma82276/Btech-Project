@@ -1,7 +1,5 @@
 import java.util.*;
 
-import javafx.util.Pair;
-
 public class split {
     public static int j=0;
     public static String main(String[] args,String curquery){
@@ -29,15 +27,6 @@ public class split {
         int join_word=Main.find(curquery, "join", 0);
 
         Vector<String[]> conditions=simplifyjoin.main(null,curquery,"[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+","=");
-        
-
-        for(String[] a:conditions){
-            String cur_alias0=a[0].substring(0,a[0].indexOf('.')); 
-            String cur_table0=map_alias_rev.get(cur_alias0.trim()); 
-            String cur_alias1=a[1].substring(0,a[1].indexOf('.'));
-            String cur_table1=map_alias_rev.get(cur_alias1.trim());
-        }
-
 
         String join_query_part;
         Vector<String> single_join=new Vector<>();

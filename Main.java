@@ -1,5 +1,4 @@
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.lang.model.util.ElementScanner6;
 import javax.xml.parsers.DocumentBuilder; 
 import org.w3c.dom.Document; 
 import org.w3c.dom.NodeList; 
@@ -45,8 +44,6 @@ public class Main {
 
     public static int is_join(String query){
         if(find(query,"join",0)!=-1) return 1;
-        
-        //int n=query.length();
 
         Set<String> table_set = new HashSet<String>();
         int from_pos=find(query,"from",0);
