@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><mapper>
 <select>
+SELECT LAST_NAME
+FROM EMPLOYEES
+WHERE DEPARTMENT_ID IN
+(SELECT DEPARTMENT_ID
+FROM DEPARTMENTS
+WHERE LOCATION_ID IN
+(SELECT LOCATION_ID
+FROM LOCATIONS
+GROUP BY CITY
+HAVING MIN(SALARY)));
+</select>
+<select>
+SELECT ProductName
+  FROM Product 
+WHERE Id IN (SELECT c.* FROM Customers as c, Orders as o, OrderDetails as od
+where o.CustomerID=c.CustomerID AND o.OrderID=od.OrderID)
+</select>
+<select>
 SELECT
   s.storeID ,
   s.storeName ,
