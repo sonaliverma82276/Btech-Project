@@ -18,8 +18,8 @@ public class split {
         Map<String,String> map_alias=new HashMap<String,String>(); 
         Map<String,String> map_alias_rev=new HashMap<String,String>(); 
         Map<String,Vector<String[]>> map_select_col=new HashMap<String,Vector<String[]>>();
-        String main_table_name=Main.getnextword(curquery, Main.find(curquery,"from",0)).getKey().split(" ")[0];
-            
+        String main_table_name=Main.getnextword(curquery, Main.find(curquery,"from ",0)).getKey().split(" ")[0];
+        
         for (String[] a : arr_alias) {
             map_alias.put(a[0],a[2]);
             map_alias_rev.put(a[2], a[0]);
@@ -29,16 +29,17 @@ public class split {
 
         int join_word=Main.find(curquery, "join", 0);
 
-        int where_pos=Main.find(curquery, "where", 0);
+        int group_pos=Main.find(curquery, "group", 0);
+        int order_pos=Main.find(curquery, "order", 0);
+        int where_pos=Math.min(Math.min(group_pos==-1?curquery.length():group_pos, order_pos==-1?curquery.length():order_pos), Main.find(curquery, "where", 0));
         if(where_pos==-1) where_pos=curquery.length();
 
         Vector<String[]> conditions=simplifyjoin.main(null,curquery.substring(0, where_pos),"[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+","=");
 
-        String join_query_part;
         Vector<String> single_join=new Vector<>();
 
-        if(join_word!=-1) {
-            join_query_part=curquery.substring(Main.find(curquery,main_table_name+" as "+map_alias.get(main_table_name),0));
+        if(join_word!=-1) { 
+            String join_query_part=curquery.substring(Main.find(curquery,main_table_name+" as "+map_alias.get(main_table_name),0));
             int start=0;
             for(String[] a:conditions){
                 int end=Main.find(join_query_part,a[1],start); 
@@ -175,29 +176,22 @@ public class split {
 
         // add rest of the query
         if(where_pos!=curquery.length() && join_word!=-1) {
-            result+= "Select temp_table"+j+".* from temp_table"+j+" where "+curquery.substring(where_pos,curquery.length());
-            Vector<String[]> where_conditions=simplifyjoin.main(null,curquery.substring(where_pos, curquery.length()),"[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+","=");
-            for(String[] a:where_conditions){
-                String[] split1 = a[0].split("\\.");
-                String[] split2 = a[1].split("\\.");
-                String table_alias1 = split1[0];
-                String table_alias2 = split2[0];
+            result+= "Select temp_table"+(j-1)+".* from temp_table"+(j-1)+" where "+curquery.substring(where_pos,curquery.length());
+            Vector<String[]> where_conditions=simplifyjoin.main(null,curquery.substring(where_pos, curquery.length()),"\\w+\\.[\\w]+(\\s*)","null");
+            
+            for(String[] a:where_conditions){  
+                for(String b:a){
+                    String[] split = b.split("\\.");
+                    String table_alias = split[0].trim();
+                    String table_name =map_alias_rev.get(table_alias); 
+                    String cur=map_alias.get(table.get(map_alias_rev.get(table_alias)));
 
-                table_alias2=table_alias2.trim();
-                String table_name1 =map_alias.get(table.get(map_alias_rev.get(table_alias1))); 
-                String table_name2 =map_alias.get(table.get(map_alias_rev.get(table_alias2))); 
-                String cur=map_alias.get(table.get(map_alias_rev.get(table_alias1)));
-                while(!(cur).equals(table_name1)) {
-                    table_name1=cur;
-                    cur=map_alias.get(table.get(map_alias_rev.get(cur)));
+                    while(!(cur).equals(table_name)) {
+                        table_name=cur;
+                        cur=map_alias.get(table.get(map_alias_rev.get(cur)));
+                    }
+                    result = result.replace(b, table_name+"."+split[1]);
                 }
-                cur=map_alias.get(table.get(map_alias_rev.get(table_alias2)));
-                while(!(cur).equals(table_name2)) {
-                    table_name2=cur;
-                    cur=map_alias.get(table.get(map_alias_rev.get(cur)));
-                }
-                result = result.replace(a[0], table_name1+"."+split1[1]);
-                result = result.replace(a[1], table_name2+"."+split2[1]);
                
             }
         }

@@ -7,7 +7,7 @@ class simplifyjoin {
   // public Vector<String[]> arr_alias;
 
   public static Vector<String[]> main(String[] args,String query,String regex,String sp) {
-    final String queryString = query;
+    final String queryString = query; 
     return deriveAlias(queryString,regex,sp);
   }
 
@@ -18,7 +18,11 @@ class simplifyjoin {
     Vector<String[]> arr_alias=new Vector<>();
     while (matcher.find()) {
         String alias=query.substring(matcher.start(),matcher.end());
-        // System.out.println("  try0\n");
+        if(sp.equals("null")) {
+          String[] cur={alias};
+          arr_alias.add(cur);
+        } 
+        else
         arr_alias.add(alias.split(sp));
     }
     
