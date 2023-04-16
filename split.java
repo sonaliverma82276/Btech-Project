@@ -1,5 +1,8 @@
 import java.util.*;
 
+import javax.print.DocFlavor.STRING;
+import javax.swing.table.TableCellEditor;
+
 public class split {
     public static int j=0;
     public static String main(String[] args,String curquery){
@@ -26,7 +29,10 @@ public class split {
 
         int join_word=Main.find(curquery, "join", 0);
 
-        Vector<String[]> conditions=simplifyjoin.main(null,curquery,"[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+","=");
+        int where_pos=Main.find(curquery, "where", 0);
+        if(where_pos==-1) where_pos=curquery.length();
+
+        Vector<String[]> conditions=simplifyjoin.main(null,curquery.substring(0, where_pos),"[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+","=");
 
         String join_query_part;
         Vector<String> single_join=new Vector<>();
@@ -62,18 +68,48 @@ public class split {
         for(String join:single_join){ 
             String join_keywords = "Select ";
 
-            String[] a = conditions.get(j);
-            
-            String[] split1 = a[0].split("\\.");
+            String[] c = conditions.get(j);
+            String first=c[0];
+            String second=c[1];
+            // System.out.println(c[0]+" "+c[1]+" c condition\n");
+            String[] s1 = c[0].split("\\.");
 
-            String[] split2 = a[1].split("\\.");
+            String[] s2 = c[1].split("\\.");
 
-            String table_alias1 = split1[0];
-            String table_alias2 = split2[0];
+            String t1 = s1[0];
+            String t2 = s2[0];
 
-            table_alias2=table_alias2.trim();
+            t2=t2.trim(); t1=t1.trim();
+
+            String[] b=conditions.get(j);
+            // System.out.println(table.get(map_alias_rev.get(t1))+" "+map_alias.get(table.get(map_alias_rev.get(t1)))+" "+s1[1]);
+            String cur=map_alias.get(table.get(map_alias_rev.get(t1)));
+            while(!(cur+"."+s1[1]).equals(b[0])) {
+                b[0]=cur+"."+s1[1];
+                cur=map_alias.get(table.get(map_alias_rev.get(cur)));
+            }
+            cur=map_alias.get(table.get(map_alias_rev.get(t2)));
+            while(!(cur+"."+s2[1]).equals(b[1])) {
+                b[1]=cur+"."+s2[1];
+                cur=map_alias.get(table.get(map_alias_rev.get(cur)));
+            }
+                // System.out.println(b[0]+" "+b[1]+" that\n");
+                conditions.set(j,b);
+                // System.out.println(conditions.get(j)[0]+" "+conditions.get(j)[1]+" that2\n");
+
+                String[] a = conditions.get(j);
+                String[] split1 = a[0].split("\\.");
+    
+                String[] split2 = a[1].split("\\.");
+    
+                String table_alias1 = split1[0];
+                String table_alias2 = split2[0];
+                table_alias2=table_alias2.trim();
+
             String table_name1 =table.get(map_alias_rev.get(table_alias1)); 
             String table_name2 =table.get(map_alias_rev.get(table_alias2)); 
+            // System.out.println(table_name1+" "+table_name2+" "+ table_alias1);
+
 
             for(String[] attr:map_select_col.get(table_name1)){ 
             join_keywords+=attr[0];
@@ -99,16 +135,18 @@ public class split {
                 join_keywords+=map_alias.get(table_name1);
                 }
                 join_keywords+=" ";
-                join = join.replace(a[0], map_alias.get(table.get(map_alias_rev.get(table_alias1)))+"."+split1[1]);
-                join = join.replace(a[1], map_alias.get(table.get(map_alias_rev.get(table_alias2)))+"."+split2[1]);
-                join_keywords+=(join+";\n");
+                // System.out.println(map_alias.get(table.get(map_alias_rev.get(table_alias1)))+" "+first+" here print\n\n");
+                join = join.replace(first, map_alias.get(table.get(map_alias_rev.get(table_alias1)))+"."+split1[1]);
+                join = join.replace(second, map_alias.get(table.get(map_alias_rev.get(table_alias2)))+"."+split2[1]);
+                join_keywords+=(join+";\n\n");
                 split_query.add(join_keywords);
                 map_alias.put("temp_table"+j,"t"+j);
+                map_alias_rev.put("t"+j,"temp_table"+j);
                 result+=join_keywords;
 
-                table.replace(table_name1,"temp_table"+j);
-        
-                table.replace(table_name2,"temp_table"+j);
+                table.put(table_name1,"temp_table"+j);
+                table.put(table_name2,"temp_table"+j);
+                table.put("temp_table"+j,"temp_table"+j);
 
                 Vector<String[]> attribute1=new Vector<>();
                 Vector<String[]> attribute=new Vector<>();
@@ -131,6 +169,35 @@ public class split {
                 map_select_col.put("temp_table"+j,attribute);
             j++;
 
+        }
+
+        // add rest of the query
+        if(where_pos!=curquery.length()) {
+            result+= "Select temp_table"+j+".* from temp_table"+j+" where "+curquery.substring(where_pos,curquery.length());
+            Vector<String[]> where_conditions=simplifyjoin.main(null,curquery.substring(where_pos, curquery.length()),"[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+","=");
+            for(String[] a:where_conditions){
+                String[] split1 = a[0].split("\\.");
+                String[] split2 = a[1].split("\\.");
+                String table_alias1 = split1[0];
+                String table_alias2 = split2[0];
+
+                table_alias2=table_alias2.trim();
+                String table_name1 =map_alias.get(table.get(map_alias_rev.get(table_alias1))); 
+                String table_name2 =map_alias.get(table.get(map_alias_rev.get(table_alias2))); 
+                String cur=map_alias.get(table.get(map_alias_rev.get(table_alias1)));
+                while(!(cur).equals(table_name1)) {
+                    table_name1=cur;
+                    cur=map_alias.get(table.get(map_alias_rev.get(cur)));
+                }
+                cur=map_alias.get(table.get(map_alias_rev.get(table_alias2)));
+                while(!(cur).equals(table_name2)) {
+                    table_name2=cur;
+                    cur=map_alias.get(table.get(map_alias_rev.get(cur)));
+                }
+                result = result.replace(a[0], table_name1+"."+split1[1]);
+                result = result.replace(a[1], table_name2+"."+split2[1]);
+               
+            }
         }
 
         return result+"\n";

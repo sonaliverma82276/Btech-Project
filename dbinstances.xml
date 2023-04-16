@@ -1,5 +1,58 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><mapper>
 <select>
+SELECT details.auditorium_id, details.name as aud_name,details.incharge_id, ud.first_name, ud.middle_name, ud.last_name, ud.dept_id, dept.name as dept_name FROM DETAILS_TABLE as details INNER JOIN user_details as ud ON details.incharge_id = ud.id INNER JOIN departments as dept ON ud.dept_id = dept.id WHERE 1;
+</select>
+<select>
+SELECT details.auditorium_id, details.name,
+details.incharge_id, ud.first_name, ud.middle_name, ud.last_name, ud.dept_id, dept.name 
+FROM DETAILS_TABLE as details 
+INNER JOIN user_details as ud 
+ON details.incharge_id = ud.id 
+INNER JOIN departments as dept 
+ON ud.dept_id = dept.id 
+WHERE details.auditorium_id = dept.aud_id and details.auditorium_id = dept.aud_id ;
+</select>
+<select>
+SELECT 
+a.id,
+			a.name,
+			a.sex,
+			a.dept_id,
+			a.email personal_email,
+			a.photopath,
+			b.course_id,
+			d.duration,
+			b.branch_id,
+			b.enrollment_year,
+			c.father_name,
+			d.course_name,
+			e.branch_name,
+			f.dept_name,
+			g.email,
+			g.email2,
+			h.address
+			FROM user_details as a 
+			JOIN stu_academic as b ON a.id=b.admn_no
+			JOIN user_other_details as c ON a.id=c.id
+			JOIN cbcs_courses as d ON b.course_id=d.id
+			JOIN cbcs_branches as e ON b.branch_id=e.id
+			JOIN cbcs_departments as f ON a.dept_id=f.id
+			JOIN emaildata as g ON a.id=g.admission_no
+			JOIN user_address as h on a.id=h.id and h.type='permanent' 
+			JOIN users as i on a.id=i.id 
+</select>
+<select>
+SELECT vb.*,x.domain_name
+        FROM vehicle_booking vb
+        JOIN (
+        SELECT a.emp_id,a.domain_name
+        FROM emaildata_emp a UNION ALL
+        SELECT a.admission_no AS emp_id,a.domain_name
+        FROM emaildata a)x ON vb.emp_no=x.emp_id
+        WHERE vb.id=?
+        LIMIT 1;
+</select>
+<select>
 SELECT LAST_NAME
 FROM EMPLOYEES
 WHERE DEPARTMENT_ID IN

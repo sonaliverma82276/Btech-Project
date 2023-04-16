@@ -71,3 +71,9 @@ FROM Customers c
 JOIN tempOrders as tem ON c.CustomerID = tem.CustomerID
 ORDER BY tem.EmployeeID;
 
+Select a.*,b.* from user_details as a into temp_table0 JOIN stu_academic as b ON a.id=b.admn_no;
+			Select t0.*,c.* from t0 into t1 JOIN user_other_details as c ON t0.id=c.id;
+			Select t0.*,d* from t0 into t2 	JOIN cbcs_courses as d ON t0.course_id=d.id;
+			Select t2.*,e.* from t2 into t3 JOIN cbcs_branches as e ON t2.branch_id=e.id;
+      t0 a b
+      t1 a  

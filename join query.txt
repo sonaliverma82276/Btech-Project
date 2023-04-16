@@ -1,0 +1,86 @@
+positive
+1. SELECT details.auditorium_id, details.name as aud_name,details.incharge_id, ud.first_name, ud.middle_name, ud.last_name, ud.dept_id, dept.name as dept_name FROM DETAILS_TABLE as details INNER JOIN user_details as ud ON details.incharge_id = ud.id INNER JOIN departments as dept ON ud.dept_id = dept.id WHERE 1;
+2.SELECT details.auditorium_id, details.name as aud_name,
+			details.incharge_id, ud.first_name, ud.middle_name, ud.last_name, ud.dept_id, dept.name as dept_name 
+			FROM DETAILS_TABLE as details 
+			INNER JOIN user_details as ud 
+			ON details.incharge_id = ud.id 
+			INNER JOIN departments as dept 
+			ON ud.dept_id = dept.id 
+			WHERE details.auditorium_id = dept.aud_id;
+3. SELECT 
+			a.id,
+			a.name,
+			a.sex,
+			a.dept_id,
+			a.email personal_email,
+			a.photopath,
+			b.course_id,
+			d.duration,
+			b.branch_id,
+			b.enrollment_year,
+			c.father_name,
+			d.`name` AS course_name,
+			e.`name` AS branch_name,
+			f.`name` AS dept_name,
+			g.domain_name AS email,
+			g.present_email AS email2,
+			h.address
+			FROM user_details as a 
+			JOIN stu_academic as b ON a.id=b.admn_no
+			JOIN user_other_details as c ON a.id=c.id
+			JOIN cbcs_courses as d ON b.course_id=d.id
+			JOIN cbcs_branches as e ON b.branch_id=e.id
+			JOIN cbcs_departments as f ON a.dept_id=f.id
+			JOIN emaildata as g ON a.id=g.admission_no
+			JOIN user_address as h on a.id=h.id and h.type='permanent' 
+			JOIN users as i on a.id=i.id 
+			WHERE a.id=? and i.status='A'
+
+4.SELECT vb.*,x.domain_name
+        FROM vehicle_booking vb
+        JOIN (
+        SELECT a.emp_id,a.domain_name
+        FROM emaildata_emp a UNION ALL
+        SELECT a.admission_no AS emp_id,a.domain_name
+        FROM emaildata a)x ON vb.emp_no=x.emp_id
+        WHERE vb.id=?
+        LIMIT 1;
+
+
+5. SELECT a.id, CONCAT_WS(' ',a.first_name,a.middle_name,a.last_name) AS sname, 
+c.name AS dname, d.name AS cname, e.name AS bname, a.photopath,b.course_id,d.duration*2 AS tot_sem,f.`status`
+FROM user_details a
+INNER JOIN stu_academic b ON b.admn_no=a.id
+INNER JOIN departments c ON c.id=a.dept_id
+LEFT JOIN cbcs_courses d ON d.id=b.course_id
+LEFT JOIN cbcs_branches e ON e.id=b.branch_id
+INNER JOIN users f ON f.id=a.id 
+WHERE a.id=?";
+
+Negative
+1.SELECT c.warning_status FROM exam_held_time a JOIN final_semwise_marks_foil_freezed b ON b.session_yr=a.syear
+                                                AND a.`session`=b.`session` LEFT JOIN academic_warning_performance c ON b.session_yr=c.session_year AND b.`session`=c.`session`
+                                                AND b.admn_no=c.admn_no WHERE b.admn_no='" . $admn_no . "' AND a.result_sequence < (SELECT result_sequence FROM
+                                                    exam_held_time WHERE syear='" . $session_year . "' AND SESSION ='" . $session . "' AND
+                                                    SESSION != 'Summer' AND exam_type='R' ) GROUP BY b.semester,b.session_yr,b.`session` ORDER BY a.result_sequence DESC LIMIT 1;
+
+2.SELECT ud.first_name, ud.middle_name, ud.last_name, t.book_from, t.book_to, t.purpose, d.name as dept_name, t.status, t.id ".
+				"FROM departments as d, ".Auditorium_constants::$STATUS_TABLE. " as t INNER JOIN user_details as ud ON ".
+				"ud.id = t.applier_id WHERE ".
+				"t.applier_id LIKE '$applier_id' AND t.auditorium_id LIKE '$aud_id' AND ud.dept_id = d.id AND ".
+				"UNIX_TIMESTAMP(t.book_from) >= '$unix_ts' AND t.status LIKE '$status' AND ud.dept_id LIKE '$dept_id' ".
+				" AND t.approver_id = '$auth_id'";
+3.SELECT a.id, CONCAT_WS(' ',a.salutation,a.first_name,a.middle_name,a.last_name) `name`, a.sex, a.dept_id, a.email personal_email, a.photopath, b.course_id,d.duration+1 duration, b.branch_id, 
+		  b.enrollment_year,j.applied_for,c.father_name, d.`name` AS course_name, e.`name` AS branch_name, f.`name` AS dept_name, g.domain_name AS email, g.present_email AS email2,CONCAT_WS(' ',h.line1,h.line2,h.city,h.state,h.country,h.pincode) as address,(SELECT NAME FROM cbcs_departments WHERE id=j.opt_dept_id) opt_dept_name
+		  FROM user_details a 
+		  JOIN stu_academic b ON a.id=b.admn_no 
+		  JOIN user_other_details c ON a.id=c.id 
+		  JOIN cbcs_courses d ON b.course_id=d.id 
+		  JOIN cbcs_branches e ON b.branch_id=e.id 
+		  JOIN cbcs_departments f ON a.dept_id=f.id 
+		  JOIN emaildata g ON a.id=g.admission_no 
+		  JOIN user_address h on a.id=h.id and h.type='permanent' 
+		  JOIN users i on a.id=i.id 
+		  JOIN major_minor_dual_final j ON a.id=j.admn_no
+		  WHERE a.id=? and i.status='A' AND applied_for in ('doublemajor','dualdegree_categoryA','dualdegree_categoryB','dualdegree_categoryC') and j.status='1'
