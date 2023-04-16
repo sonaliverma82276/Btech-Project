@@ -47,7 +47,9 @@ public class split {
             }
         } 
         else {
-            for(String[] a:conditions){
+            conditions=simplifyjoin.main(null,curquery.substring(where_pos),"[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+","=");
+            
+            for(String[] a:conditions){ 
                 String b=a[0],c=a[1];
                 if(Main.find(a[1],map_alias.get(main_table_name)+".",0)==-1){ b=a[1]; c=a[0];} 
                 String cur_alias=b.substring(0,b.indexOf('.'));
@@ -172,7 +174,7 @@ public class split {
         }
 
         // add rest of the query
-        if(where_pos!=curquery.length()) {
+        if(where_pos!=curquery.length() && join_word!=-1) {
             result+= "Select temp_table"+j+".* from temp_table"+j+" where "+curquery.substring(where_pos,curquery.length());
             Vector<String[]> where_conditions=simplifyjoin.main(null,curquery.substring(where_pos, curquery.length()),"[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+","=");
             for(String[] a:where_conditions){
