@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><mapper>
 <select>
-SELECT details.auditorium_id, details.name as aud_name,details.incharge_id, ud.first_name, ud.middle_name, ud.last_name, ud.dept_id, dept.name as dept_name FROM DETAILS_TABLE as details INNER JOIN user_details as ud ON details.incharge_id = ud.id INNER JOIN departments as dept ON ud.dept_id = dept.id WHERE 1;
+SELECT details.auditorium_id, details.name as aud_name,details.incharge_id, ud.first_name, ud.middle_name, ud.last_name, ud.dept_id, dept.name as dept_name FROM DETAILS_TABLE details INNER JOIN user_details ud ON details.incharge_id = ud.id INNER JOIN departments dept ON ud.dept_id = dept.id WHERE 1;
 </select>
 <select>
 SELECT details.auditorium_id, details.name,
@@ -54,36 +54,36 @@ SELECT vb.*,x.domain_name
 </select>
 <select>
 SELECT a.id, a.name, 
-c.name AS dname, d.name AS cname, e.name AS bname, a.photopath,b.course_id,d.duration*2 AS tot_sem,f.`status`
-FROM user_details as a
-INNER JOIN stu_academic as b ON b.admn_no=a.id
-INNER JOIN departments as c ON c.id=a.dept_id
-LEFT JOIN cbcs_courses as d ON d.id=b.course_id
-LEFT JOIN cbcs_branches as e ON e.id=b.branch_id
+c.name AS dname, d.name AS cname, e.name AS bname, a.photopath, b.course_id, d.duration*2 AS tot_sem, f.`status`
+FROM user_details as a 
+INNER JOIN stu_academic as b ON b.admn_no=a.id 
+INNER JOIN departments as c ON c.id=a.dept_id 
+LEFT JOIN cbcs_courses as d ON d.id=b.course_id 
+LEFT JOIN cbcs_branches as e ON e.id=b.branch_id 
 INNER JOIN users as f ON f.id=a.id 
 WHERE a.id = ?";
 </select>
 <select>
-SELECT a.admn_no,a.hostel_name,b.inventory_amount,c.payment_status, c.status
-FROM no_dues_hs_individual as a INNER JOIN no_dues_hs_details as b ON a.id = b.assign_hs_no_dues_id INNER JOIN no_dues_hs_payment as c ON c.hs_no_dues_id = b.id
+SELECT a.admn_no,a.hostel_name,b.inventory_amount,c.payment_status, c.status 
+FROM no_dues_hs_individual as a INNER JOIN no_dues_hs_details as b ON a.id = b.assign_hs_no_dues_id INNER JOIN no_dues_hs_payment as c ON c.hs_no_dues_id = b.id 
 WHERE a.admn_no = ? AND a.is_deleted = 0;
 </select>
 <select>
-SELECT a.map_id,a.emp_no AS teacher_id,a.sub_id FROM subject_mapping_des as a
-inner join subject_mapping as b on a.map_id=b.map_id
-inner join fb_student_subject_desc as c on c.sub_id=a.sub_id
+SELECT a.map_id, a.emp_no AS teacher_id, a.sub_id FROM subject_mapping_des as a 
+inner join subject_mapping as b on a.map_id=b.map_id 
+inner join fb_student_subject_desc as c on c.sub_id=a.sub_id 
 inner join fb_student_subject_main as d on d.id=c.main_id 
 </select>
 <select>
-SELECT t.ref_id, t.ref_id,t.emp_no,t.leave_type,ud.salutation,ud.first_name,ud.middle_name,ud.last_name,t.leave_type,t.email_from,t.email_to,t.sent_date,t.mail_status
- FROM leave_mail_send as t
-INNER JOIN user_details as ud ON t.emp_no=ud.id
-INNER JOIN departments as dpt ON ud.dept_id=dpt.id
-INNER JOIN emp_basic_details as ebs ON t.emp_no=ebs.emp_no
-INNER JOIN designations as desg ON ebs.designation=desg.id
-WHERE t.mail_status = desg.id
-GROUP BY t.ref_id
-ORDER BY t.emp_no
+SELECT t.ref_id, t.ref_id, t.emp_no, t.leave_type, ud.salutation, ud.first_name, ud.middle_name, ud.last_name, t.leave_type, t.email_frm, t.email_to, t.sent_date, t.mail_status
+ FROM leave_mail_send as t 
+INNER JOIN user_details as ud ON t.emp_no=ud.id 
+INNER JOIN departments as dpt ON ud.dept_id=dpt.id 
+INNER JOIN emp_basic_details as ebs ON t.emp_no=ebs.emp_no 
+INNER JOIN designations as desg ON ebs.designation=desg.id 
+WHERE t.mail_status = desg.id 
+GROUP BY t.ref_id 
+ORDER BY t.emp_no 
 </select>
 <select>
 SELECT LAST_NAME
@@ -105,17 +105,17 @@ where o.CustomerID=c.CustomerID AND o.OrderID=od.OrderID)
 </select>
 <select>
 SELECT
-  s.storeID ,
-  s.storeName ,
-  p.productID ,
-  p.productName ,
-  p.productPrice ,
-  e.employeeID ,
-  e.employeeName ,
-  e.employeeSalary ,
-FROM stores AS s
-LEFT JOIN products AS p ON p.fk_store_id = s.storeID
-LEFT JOIN employees AS e ON e.fk_store_id = s.storeID;
+  stores.storeID ,
+  stores.storeName ,
+  products.productID ,
+  products.productName ,
+  products.productPrice ,
+  employees.employeeID ,
+  employees.employeeName ,
+  employees.employeeSalary ,
+FROM stores 
+LEFT JOIN products ON products.fk_store_id = stores.storeID 
+LEFT JOIN employees ON employees.fk_store_id = stores.storeID;
 </select>
 <select>
 SELECT c.* FROM Customers as c, Orders as o, OrderDetails as od
