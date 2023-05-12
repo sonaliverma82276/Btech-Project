@@ -98,12 +98,6 @@ GROUP BY CITY
 HAVING MIN(SALARY)));
 </select>
 <select>
-SELECT ProductName
-  FROM Product 
-WHERE Id IN (SELECT c.* FROM Customers as c, Orders as o, OrderDetails as od
-where o.CustomerID=c.CustomerID AND o.OrderID=od.OrderID)
-</select>
-<select>
 SELECT
   stores.storeID ,
   stores.storeName ,
@@ -118,7 +112,13 @@ LEFT JOIN products ON products.fk_store_id = stores.storeID
 LEFT JOIN employees ON employees.fk_store_id = stores.storeID;
 </select>
 <select>
-SELECT c.* FROM Customers as c, Orders as o, OrderDetails as od
+SELECT c.* FROM Customers as c, Orders as o, OrderDetails as od 
 where o.CustomerID=c.CustomerID AND o.OrderID=od.OrderID;
+</select>
+<select>
+SELECT ProductName
+  FROM Product 
+WHERE Id IN (SELECT c.* FROM Customers as c, Orders as o, OrderDetails as od 
+where o.CustomerID=c.CustomerID AND o.OrderID=od.OrderID)
 </select>
 </mapper>
