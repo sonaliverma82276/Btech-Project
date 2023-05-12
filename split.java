@@ -17,12 +17,16 @@ public class split {
         if(where_pos==-1) where_pos=curquery.length();
 
         int from_pos = Main.find(curquery,"from",0);
-
+        Vector<String[]> conditions;
         Vector<String[]> attributes = simplifyjoin.main(null,curquery.substring(0,from_pos),"[\\w]+(\\.)[\\w]+"," ");
-        Vector<String[]> conditions=simplifyjoin.main(null,curquery.substring(0, where_pos),"[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+","=");
+        if(join_word!=-1)
+        conditions=simplifyjoin.main(null,curquery.substring(0, where_pos),"[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+","=");
+        else
+        conditions=simplifyjoin.main(null,curquery.substring(0, curquery.length()),"[\\w]+.[\\w]+(\\s*)=(\\s*)[\\w]+.[\\w]+","=");
         Vector<String> tables= new Vector<>();
         
         for(String[] c:conditions){
+
             String[] s1 = c[0].split("\\.");
             String[] s2 = c[1].split("\\.");
             s2[0]=s2[0].trim();
@@ -40,7 +44,7 @@ public class split {
             }
         }
        
-        /*for(String s:tables){
+        /* for(String s:tables){
             System.out.println(s+"\n");
         }*/
 
@@ -64,8 +68,13 @@ public class split {
         for (String a : tables) {
             String keyword= " "+a+" ";
             int alias_pos = Main.find(curquery,keyword,0);
+             if(alias_pos==-1)
+             {
+                keyword=" "+a+",";
+                alias_pos = Main.find(curquery,keyword,0);
+             }
             alias_pos-=keyword.length();
-            //System.out.println(curquery.charAt(alias_pos));      
+            //System.out.println(alias_pos);      
             int start_pos=-1;
             int end_pos=alias_pos-2;
             while(curquery.charAt(end_pos)!=' '){
@@ -75,7 +84,6 @@ public class split {
             String table_name = curquery.substring(start_pos+1,alias_pos);
             table_name=table_name.trim();
             alias_pos=end_pos;
-
             end_pos--;
             String temp = "as";
 
@@ -104,6 +112,7 @@ public class split {
     }  
 
         String join_query_part;
+
         Vector<String> single_join=new Vector<>();
         if(join_word!=-1) {
 
@@ -133,7 +142,8 @@ public class split {
                 single_join.add("join "+cur_table+" on "+b+"="+c);
             }
         }
-        
+
+
         Vector<String> split_query = new Vector<String>();
 
         String result="";
@@ -146,7 +156,7 @@ public class split {
             //System.out.println(c[0]+" "+c[1]+" c condition\n");
             String[] s1 = c[0].split("\\.");
             String[] s2 = c[1].split("\\.");
-            //System.out.println(s1[0]+" "+s2[0]);
+            //System.out.println(s1[0]+" "+s2[0]); 
             String t1 = s1[0];
             String t2 = s2[0];
 
